@@ -124,6 +124,19 @@ body {
 
 /* Nút bấm STOP (Trạng thái sau khi bấm) */
 .btn-luxury-stop {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+
   background: linear-gradient(135deg, #c22955 0%, #8b0000 100%);
   color: white;
   box-shadow: 0 4px 15px rgba(194, 41, 85, 0.3);
