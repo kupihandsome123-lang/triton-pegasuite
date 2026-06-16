@@ -49,3 +49,27 @@ window.addEventListener('beforeunload', function (e) {
     e.preventDefault();
     e.returnValue = ''; 
 });
+// script.js
+
+const levelBtn = document.getElementById('levelControlBtn');
+
+levelBtn.addEventListener('click', function() {
+  // Kiểm tra trạng thái hiện tại thông qua text
+  if (this.textContent === 'START') {
+    // Chuyển sang STOP
+    this.textContent = 'STOP';
+    this.classList.remove('btn-luxury-start');
+    this.classList.add('btn-luxury-stop');
+    
+    // Bạn sẽ gán chức năng bắt đầu đếm level ở đây sau
+    console.log("Đã bắt đầu Timer Level...");
+  } else {
+    // Chuyển ngược lại START
+    this.textContent = 'START';
+    this.classList.remove('btn-luxury-stop');
+    this.classList.add('btn-luxury-start');
+    
+    // Bạn sẽ gán chức năng dừng Timer ở đây sau
+    console.log("Đã dừng Timer Level.");
+  }
+});
