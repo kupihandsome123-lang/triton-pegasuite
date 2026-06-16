@@ -1,3 +1,4 @@
+// Dữ liệu bảng level
 const pokerLevels = [
   [1, 10, 10, 10], [2, 10, 20, 20], [3, 20, 40, 40], [4, 30, 60, 60], [5, 40, 80, 80],
   ["BK", "Break", "Time", "-"], 
@@ -13,23 +14,38 @@ const pokerLevels = [
 let currentLevelIndex = 0;
 const tableBody = document.getElementById('pokerLevelsContent');
 
+// Render bảng level ra HTML
 pokerLevels.forEach((lvl, index) => {
   const row = document.createElement('tr');
   row.id = `level-row-${index}`;
   
-  // Kiểm tra nếu là dòng Break thì thêm class để đổi màu
   if (lvl[0] === "BK") row.className = "break-row";
-  
   row.innerHTML = `<td>${lvl[0]}</td><td>${lvl[1]}</td><td>${lvl[2]}</td><td>${lvl[3]}</td>`;
   
-  // Click đúp để chọn level
+  // Click đúp để highlight level
   row.addEventListener('dblclick', () => {
     currentLevelIndex = index;
-    // Cần có hàm updateLevelHighlight() đi kèm nếu bạn dùng lại code này
-    if (typeof updateLevelHighlight === 'function') {
-        updateLevelHighlight();
-    }
+    updateLevelHighlight();
   });
   
   tableBody.appendChild(row);
+});
+
+// Hàm highlight dòng level đang chọn
+function updateLevelHighlight() {
+  document.querySelectorAll('.level-table tr').forEach(tr => tr.classList.remove('active-level'));
+  const activeRow = document.getElementById(`level-row-${currentLevelIndex}`);
+  if (activeRow) {
+    activeRow.classList.add('active-level');
+    activeRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+// Chạy highlight level đầu tiên khi vừa load trang
+updateLevelHighlight();
+
+// Chống load lại trang do lỡ tay bấm F5
+window.addEventListener('beforeunload', function (e) {
+    e.preventDefault();
+    e.returnValue = ''; 
 });
