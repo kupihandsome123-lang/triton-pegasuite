@@ -286,8 +286,20 @@ function updatePrizeList(entriesCount, totalPrizePool) {
   prizeListElement.innerHTML = ''; // Xoá danh sách hiện tại
   const formatter = new Intl.NumberFormat('de-DE');
   
-  if (entriesCount < 11) {
-    // Dưới 11 người: 2 giải
+  if (entriesCount === 0) {
+    // 0 người: giải 1 và 2 đều bằng 0
+    prizeListElement.innerHTML = `
+      <div class="prize-row"><span>1</span><span>0</span></div>
+      <div class="prize-row"><span>2</span><span>0</span></div>
+    `;
+  } else if (entriesCount === 1) {
+    // 1 người: giải 1 lấy toàn bộ (500k), giải 2 bằng 0
+    prizeListElement.innerHTML = `
+      <div class="prize-row"><span>1</span><span>${formatter.format(totalPrizePool)}</span></div>
+      <div class="prize-row"><span>2</span><span>0</span></div>
+    `;
+  } else if (entriesCount < 11) {
+    // Từ 2 đến 10 người: 2 giải
     const prize2 = 500000;
     const prize1 = totalPrizePool - prize2;
     
@@ -317,3 +329,116 @@ function updatePrizeList(entriesCount, totalPrizePool) {
 // Chạy tính toán Total Stack và Total Prize Pool ngay khi tải trang
 updateTotalStack();
 updateTotalPrizePool();
+
+// Xử lý bật/tắt Add Name Popup
+const openAddNamePopupBtn = document.getElementById('openAddNamePopupBtn');
+const addNamePopup = document.getElementById('addNamePopup');
+
+if (openAddNamePopupBtn && addNamePopup) {
+  openAddNamePopupBtn.addEventListener('click', () => {
+    addNamePopup.style.display = 'flex';
+    document.getElementById('nameInput').focus();
+  });
+
+  // Đóng popup khi click ra ngoài vùng xám
+  addNamePopup.addEventListener('click', (e) => {
+    if (e.target === addNamePopup) {
+      addNamePopup.style.display = 'none';
+    }
+  });
+}
+
+// Quản lý danh sách người chơi
+let playerEntries = [];
+let activePlayerIndex = -1;
+
+const nameInput = document.getElementById('nameInput');
+const addNameBtn = document.getElementById('addNameBtn');
+const popupNameList = document.getElementById('popupNameList');
+const mainNameList = document.getElementById('mainNameList');
+const valEntries = document.getElementById('val-entries');
+
+function renderNameLists() {
+  if (!popupNameList || !mainNameList) return;
+  
+  popupNameList.innerHTML = '';
+  mainNameList.innerHTML = '';
+  
+  playerEntries.forEach((player, index) => {
+    // Render popup list item
+    const popupItem = document.createElement('div');
+    popupItem.className = 'popup-list-item' + (index === activePlayerIndex ? ' active-item' : '');
+    popupItem.style.cursor = 'pointer';
+    popupItem.innerHTML = `<span>${player.name}</span><span>${player.count}</span>`;
+    
+    // Click vào item để chọn
+    popupItem.addEventListener('click', () => {
+      activePlayerIndex = index;
+      nameInput.value = ''; // Làm rỗng ô nhập để chuẩn bị cộng thêm cho người này
+      renderNameLists();
+      nameInput.focus();
+    });
+    
+    popupNameList.appendChild(popupItem);
+    
+    // Render main list item (bảng bên ngoài)
+    const mainItem = document.createElement('div');
+    mainItem.className = 'name-row';
+    mainItem.innerHTML = `<span>${player.name}</span><span>${player.count}</span>`;
+    mainNameList.appendChild(mainItem);
+  });
+}
+
+function handleAddName() {
+  const name = nameInput.value.trim();
+  
+  if (!name) {
+    // Nếu ô nhập rỗng, cộng 1 cho người đang được chọn (nếu có)
+    if (activePlayerIndex >= 0 && activePlayerIndex < playerEntries.length) {
+      playerEntries[activePlayerIndex].count += 1;
+    } else {
+      return; // Không có gì để cộng
+    }
+  } else {
+    // Nếu có nhập tên
+    const lowerName = name.toLowerCase();
+    const existingIndex = playerEntries.findIndex(p => p.name.toLowerCase() === lowerName);
+    
+    if (existingIndex !== -1) {
+      playerEntries[existingIndex].count += 1;
+      // Không tự động select khi vừa nhập tên bằng tay
+      activePlayerIndex = -1;
+    } else {
+      playerEntries.push({ name: name, count: 1 });
+      // Không tự động select khi vừa nhập tên bằng tay
+      activePlayerIndex = -1;
+    }
+  }
+  
+  // Tăng total entries
+  let currentEntries = parseInt(valEntries.textContent.replace(/[,.]/g, ''), 10) || 0;
+  valEntries.textContent = currentEntries + 1;
+  
+  // Cập nhật các thông số khác liên quan đến Total Entries
+  updateTotalStack();
+  updateTotalPrizePool();
+  
+  // Render lại danh sách
+  renderNameLists();
+  
+  // Xoá ô nhập và focus lại để gõ tiếp
+  nameInput.value = '';
+  nameInput.focus();
+}
+
+if (addNameBtn) {
+  addNameBtn.addEventListener('click', handleAddName);
+}
+
+if (nameInput) {
+  nameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      handleAddName();
+    }
+  });
+}

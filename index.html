@@ -30,7 +30,10 @@
     <div class="stats-panel">
       <div class="stat-item">
         <span class="stat-label">Total Entries</span>
-        <span class="stat-value" id="val-entries">11</span>
+        <div style="position: relative; display: flex; align-items: center;">
+          <span class="stat-value" id="val-entries">0</span>
+          <img src="Add Circle.svg" id="openAddNamePopupBtn" style="cursor: pointer; width: 24px; height: 24px; position: absolute; left: calc(100% + 16px);" alt="Add">
+        </div>
       </div>
       <div class="stat-item">
         <span class="stat-label">Total Stack</span>
@@ -85,10 +88,19 @@
             <span class="ticket-star">★</span>
           </div>
         </div>
-        <div class="name-list-content">
-          <div class="name-row"><span>Huy</span><span>1</span></div>
-          <div class="name-row"><span>Hiền</span><span>2</span></div>
-          <div class="name-row"><span>Linh</span><span>3</span></div>
+        <div class="name-list-content" id="mainNameList">
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Name Popup -->
+    <div id="addNamePopup" class="popup-overlay" style="display: none;">
+      <div class="popup-content">
+        <div class="popup-top-row">
+          <input type="text" id="nameInput" placeholder="Enter name" class="popup-input">
+          <button id="addNameBtn" class="popup-add-btn">+</button>
+        </div>
+        <div class="popup-list" id="popupNameList">
         </div>
       </div>
     </div>
