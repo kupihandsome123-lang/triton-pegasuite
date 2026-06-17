@@ -44,6 +44,56 @@ function updateLevelHighlight() {
 // Chạy highlight level đầu tiên khi vừa load trang
 updateLevelHighlight();
 
+let countdownInterval = null;
+let remainingSeconds = 15 * 60; // 15 minutes
+
+function updateTimerDisplay() {
+  const minutes = Math.floor(remainingSeconds / 60);
+  const seconds = remainingSeconds % 60;
+  document.getElementById('mainTimer').textContent = 
+    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function updateMainLevelDisplay() {
+  const lvlData = pokerLevels[currentLevelIndex];
+  const mainLevelElement = document.getElementById('mainLevel');
+  const mainBlindsElement = document.getElementById('mainBlinds');
+  const mainNextBlindsElement = document.getElementById('mainNextBlinds');
+
+  if (lvlData[0] === "BK") {
+    mainLevelElement.textContent = "BREAK";
+    mainBlindsElement.textContent = "Break Time";
+  } else {
+    mainLevelElement.textContent = `LEVEL ${lvlData[0]}`;
+    mainBlindsElement.textContent = `${lvlData[1]} / ${lvlData[2]} BBA`;
+  }
+
+  // Handle NEXT Blinds
+  let nextLvlData = null;
+  for (let i = currentLevelIndex + 1; i < pokerLevels.length; i++) {
+    if (pokerLevels[i][0] !== "BK") {
+      nextLvlData = pokerLevels[i];
+      break;
+    }
+  }
+
+  if (nextLvlData) {
+    mainNextBlindsElement.textContent = `NEXT: ${nextLvlData[1]} / ${nextLvlData[2]} BBA`;
+  } else {
+    mainNextBlindsElement.textContent = "";
+  }
+}
+
+// Ghi đè lại hàm updateLevelHighlight để cập nhật luôn hiển thị level chính
+const originalUpdateLevelHighlight = updateLevelHighlight;
+updateLevelHighlight = function() {
+  originalUpdateLevelHighlight();
+  updateMainLevelDisplay();
+}
+// Cập nhật ngay từ đầu
+updateMainLevelDisplay();
+updateTimerDisplay();
+
 // Chống load lại trang do lỡ tay bấm F5
 window.addEventListener('beforeunload', function (e) {
     e.preventDefault();
@@ -61,7 +111,23 @@ levelBtn.addEventListener('click', function() {
     this.classList.remove('btn-luxury-start');
     this.classList.add('btn-luxury-stop');
     
-    // Bạn sẽ gán chức năng bắt đầu đếm level ở đây sau
+    // Bắt đầu đếm ngược
+    countdownInterval = setInterval(() => {
+      if (remainingSeconds > 0) {
+        remainingSeconds--;
+        updateTimerDisplay();
+      } else {
+        // Hết thời gian, tăng level
+        if (currentLevelIndex < pokerLevels.length - 1) {
+          currentLevelIndex++;
+          updateLevelHighlight();
+        }
+        // Reset thời gian lại 15 phút
+        remainingSeconds = 15 * 60;
+        updateTimerDisplay();
+      }
+    }, 1000);
+    
     console.log("Đã bắt đầu Timer Level...");
   } else {
     // Chuyển ngược lại START
@@ -69,7 +135,10 @@ levelBtn.addEventListener('click', function() {
     this.classList.remove('btn-luxury-stop');
     this.classList.add('btn-luxury-start');
     
-    // Bạn sẽ gán chức năng dừng Timer ở đây sau
+    // Dừng đếm ngược
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+    
     console.log("Đã dừng Timer Level.");
   }
 });
