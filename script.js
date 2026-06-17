@@ -103,15 +103,16 @@ function updateMainLevelDisplay() {
 
   // Handle NEXT Blinds
   let nextLvlData = null;
-  for (let i = currentLevelIndex + 1; i < pokerLevels.length; i++) {
-    if (pokerLevels[i][0] !== "BK") {
-      nextLvlData = pokerLevels[i];
-      break;
-    }
+  if (currentLevelIndex + 1 < pokerLevels.length) {
+    nextLvlData = pokerLevels[currentLevelIndex + 1];
   }
 
   if (nextLvlData) {
-    mainNextBlindsElement.textContent = `NEXT: ${nextLvlData[1]} / ${nextLvlData[2]} BBA`;
+    if (nextLvlData[0] === "BK") {
+      mainNextBlindsElement.textContent = `NEXT: Break Time`;
+    } else {
+      mainNextBlindsElement.textContent = `NEXT: ${nextLvlData[1]} / ${nextLvlData[2]} BBA`;
+    }
   } else {
     mainNextBlindsElement.textContent = "";
   }
