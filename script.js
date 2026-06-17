@@ -269,9 +269,48 @@ function updateTotalPrizePool() {
             // Định dạng theo kiểu de-DE để có dấu chấm (4.000.000) và thêm chữ $
             prizeTotalElement.textContent = new Intl.NumberFormat('de-DE').format(totalPrize) + ' $';
           }
+          
+          // Tính toán danh sách giải thưởng
+          updatePrizeList(entriesCount, totalPrize);
         }
       }
     }
+  }
+}
+
+// Cập nhật danh sách giải thưởng theo số lượng entries
+function updatePrizeList(entriesCount, totalPrizePool) {
+  const prizeListElement = document.querySelector('.prize-list');
+  if (!prizeListElement) return;
+  
+  prizeListElement.innerHTML = ''; // Xoá danh sách hiện tại
+  const formatter = new Intl.NumberFormat('de-DE');
+  
+  if (entriesCount < 11) {
+    // Dưới 11 người: 2 giải
+    const prize2 = 500000;
+    const prize1 = totalPrizePool - prize2;
+    
+    // Nếu tổng giải thưởng ít hơn 500k thì giải 1 bị âm, ta có thể xử lý an toàn
+    const finalPrize1 = prize1 > 0 ? prize1 : 0;
+    
+    prizeListElement.innerHTML = `
+      <div class="prize-row"><span>1</span><span>${formatter.format(finalPrize1)}</span></div>
+      <div class="prize-row"><span>2</span><span>${formatter.format(prize2)}</span></div>
+    `;
+  } else {
+    // Từ 11 người trở lên: 3 giải
+    const prize2 = 1000000;
+    const prize3 = 500000;
+    const prize1 = totalPrizePool - prize2 - prize3;
+    
+    const finalPrize1 = prize1 > 0 ? prize1 : 0;
+    
+    prizeListElement.innerHTML = `
+      <div class="prize-row"><span>1</span><span>${formatter.format(finalPrize1)}</span></div>
+      <div class="prize-row"><span>2</span><span>${formatter.format(prize2)}</span></div>
+      <div class="prize-row"><span>3</span><span>${formatter.format(prize3)}</span></div>
+    `;
   }
 }
 
