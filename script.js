@@ -1,7 +1,7 @@
 // Dữ liệu bảng level
 const pokerLevels = [
   [1, 10, 10, 10], [2, 10, 20, 20], [3, 20, 40, 40], [4, 30, 60, 60], [5, 40, 80, 80],
-  ["BK", "Break", "Time", "-"], 
+  ["BK", "Break", "Time", "-"],
   [6, 50, 100, 100], [7, 60, 120, 120], [8, 70, 140, 140], [9, 80, 160, 160], [10, 90, 180, 180],
   ["BK", "Break", "Time", "-"],
   [11, 100, 200, 200], [12, 150, 300, 300], [13, 200, 400, 400], [14, 250, 500, 500], [15, 300, 600, 600],
@@ -18,16 +18,16 @@ const tableBody = document.getElementById('pokerLevelsContent');
 pokerLevels.forEach((lvl, index) => {
   const row = document.createElement('tr');
   row.id = `level-row-${index}`;
-  
+
   if (lvl[0] === "BK") row.className = "break-row";
   row.innerHTML = `<td>${lvl[0]}</td><td>${lvl[1]}</td><td>${lvl[2]}</td><td>${lvl[3]}</td>`;
-  
+
   // Click đúp để highlight level
   row.addEventListener('dblclick', () => {
     currentLevelIndex = index;
     updateLevelHighlight();
   });
-  
+
   tableBody.appendChild(row);
 });
 
@@ -50,7 +50,7 @@ let remainingSeconds = 15 * 60; // 15 minutes
 function updateTimerDisplay() {
   const minutes = Math.floor(remainingSeconds / 60);
   const seconds = remainingSeconds % 60;
-  document.getElementById('mainTimer').textContent = 
+  document.getElementById('mainTimer').textContent =
     `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
@@ -86,9 +86,17 @@ function updateMainLevelDisplay() {
 
 // Ghi đè lại hàm updateLevelHighlight để cập nhật luôn hiển thị level chính
 const originalUpdateLevelHighlight = updateLevelHighlight;
-updateLevelHighlight = function() {
+updateLevelHighlight = function () {
   originalUpdateLevelHighlight();
   updateMainLevelDisplay();
+  
+  // Cập nhật lại thời gian tuỳ theo level (15 phút) hay break (5 phút)
+  if (pokerLevels[currentLevelIndex][0] === "BK") {
+    remainingSeconds = 5 * 60;
+  } else {
+    remainingSeconds = 15 * 60;
+  }
+  updateTimerDisplay();
 }
 // Cập nhật ngay từ đầu
 updateMainLevelDisplay();
@@ -96,21 +104,21 @@ updateTimerDisplay();
 
 // Chống load lại trang do lỡ tay bấm F5
 window.addEventListener('beforeunload', function (e) {
-    e.preventDefault();
-    e.returnValue = ''; 
+  e.preventDefault();
+  e.returnValue = '';
 });
 // script.js
 
 const levelBtn = document.getElementById('levelControlBtn');
 
-levelBtn.addEventListener('click', function() {
+levelBtn.addEventListener('click', function () {
   // Kiểm tra trạng thái hiện tại thông qua text
   if (this.textContent === 'START') {
     // Chuyển sang STOP
     this.textContent = 'STOP';
     this.classList.remove('btn-luxury-start');
     this.classList.add('btn-luxury-stop');
-    
+
     // Bắt đầu đếm ngược
     countdownInterval = setInterval(() => {
       if (remainingSeconds > 0) {
@@ -122,23 +130,20 @@ levelBtn.addEventListener('click', function() {
           currentLevelIndex++;
           updateLevelHighlight();
         }
-        // Reset thời gian lại 15 phút
-        remainingSeconds = 15 * 60;
-        updateTimerDisplay();
       }
     }, 1000);
-    
+
     console.log("Đã bắt đầu Timer Level...");
   } else {
     // Chuyển ngược lại START
     this.textContent = 'START';
     this.classList.remove('btn-luxury-stop');
     this.classList.add('btn-luxury-start');
-    
+
     // Dừng đếm ngược
     clearInterval(countdownInterval);
     countdownInterval = null;
-    
+
     console.log("Đã dừng Timer Level.");
   }
 });
