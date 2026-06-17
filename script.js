@@ -47,11 +47,44 @@ updateLevelHighlight();
 let countdownInterval = null;
 let remainingSeconds = 15 * 60; // 15 minutes
 
+function updateNextBreakDisplay() {
+  let secondsToBreak = 0;
+  let foundBreak = false;
+
+  if (pokerLevels[currentLevelIndex][0] === "BK") {
+    document.getElementById('val-nbreak').textContent = "00:00:00";
+    return;
+  }
+
+  secondsToBreak += remainingSeconds;
+
+  for (let i = currentLevelIndex + 1; i < pokerLevels.length; i++) {
+    if (pokerLevels[i][0] === "BK") {
+      foundBreak = true;
+      break;
+    } else {
+      secondsToBreak += 15 * 60; 
+    }
+  }
+
+  if (foundBreak) {
+    const h = Math.floor(secondsToBreak / 3600);
+    const m = Math.floor((secondsToBreak % 3600) / 60);
+    const s = secondsToBreak % 60;
+    document.getElementById('val-nbreak').textContent = 
+      `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  } else {
+    document.getElementById('val-nbreak').textContent = "--:--:--";
+  }
+}
+
 function updateTimerDisplay() {
   const minutes = Math.floor(remainingSeconds / 60);
   const seconds = remainingSeconds % 60;
   document.getElementById('mainTimer').textContent =
     `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+  updateNextBreakDisplay();
 }
 
 function updateMainLevelDisplay() {
@@ -147,3 +180,33 @@ levelBtn.addEventListener('click', function () {
     console.log("Đã dừng Timer Level.");
   }
 });
+
+// Hàm tính toán tự động Total Stack từ Total Entries và chuỗi Stack ở top-info-line
+function updateTotalStack() {
+  const infoElements = document.querySelectorAll('.top-info-line');
+  if (infoElements.length > 1) {
+    const text = infoElements[1].textContent;
+    // Tìm chuỗi "Stack: " và lấy phần số đằng sau
+    const stackMatch = text.match(/Stack:\s*([\d,.]+)/i);
+    if (stackMatch) {
+      // Xoá dấu phẩy hoặc chấm nếu có
+      let stackStr = stackMatch[1].replace(/[,.]/g, '');
+      const stackSize = parseInt(stackStr, 10);
+      
+      const entriesElement = document.getElementById('val-entries');
+      if (entriesElement) {
+        const entriesText = entriesElement.textContent;
+        const entriesCount = parseInt(entriesText.replace(/[,.]/g, ''), 10);
+        
+        if (!isNaN(stackSize) && !isNaN(entriesCount)) {
+          const totalStack = stackSize * entriesCount;
+          // Định dạng số có dấu chấm ngăn cách hàng nghìn (ví dụ 20.000)
+          document.getElementById('val-tstack').textContent = new Intl.NumberFormat('de-DE').format(totalStack);
+        }
+      }
+    }
+  }
+}
+
+// Chạy tính toán Total Stack ngay khi tải trang
+updateTotalStack();
