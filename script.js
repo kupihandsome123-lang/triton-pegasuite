@@ -130,6 +130,9 @@ updateLevelHighlight = function () {
     remainingSeconds = 15 * 60;
   }
   updateTimerDisplay();
+  
+  // Cập nhật BB khi chuyển level
+  updateBBDisplay();
 }
 // Cập nhật ngay từ đầu
 updateMainLevelDisplay();
@@ -181,6 +184,31 @@ levelBtn.addEventListener('click', function () {
   }
 });
 
+function updateBBDisplay() {
+  const tstackElement = document.getElementById('val-tstack');
+  const astackElement = document.getElementById('val-astack'); // BB display
+  
+  if (tstackElement && astackElement) {
+    // Lấy giá trị Total Stack hiện tại
+    const totalStackText = tstackElement.textContent.replace(/[,.]/g, '');
+    const totalStack = parseInt(totalStackText, 10);
+    
+    // Lấy Big blind của level hiện tại
+    const lvlData = pokerLevels[currentLevelIndex];
+    
+    if (lvlData[0] === "BK") {
+      astackElement.textContent = "-";
+    } else {
+      const bigBlind = parseInt(lvlData[2], 10);
+      if (!isNaN(totalStack) && !isNaN(bigBlind) && bigBlind > 0) {
+        // bb = total stack / big blind (có thể lấy số nguyên)
+        const bbValue = Math.round(totalStack / bigBlind);
+        astackElement.textContent = new Intl.NumberFormat('de-DE').format(bbValue);
+      }
+    }
+  }
+}
+
 // Hàm tính toán tự động Total Stack từ Total Entries và chuỗi Stack ở top-info-line
 function updateTotalStack() {
   const infoElements = document.querySelectorAll('.top-info-line');
@@ -202,11 +230,51 @@ function updateTotalStack() {
           const totalStack = stackSize * entriesCount;
           // Định dạng số có dấu chấm ngăn cách hàng nghìn (ví dụ 20.000)
           document.getElementById('val-tstack').textContent = new Intl.NumberFormat('de-DE').format(totalStack);
+          
+          // Sau khi tính Total Stack xong, cập nhật luôn số lượng BB
+          updateBBDisplay();
         }
       }
     }
   }
 }
 
-// Chạy tính toán Total Stack ngay khi tải trang
+// Hàm tính toán tự động Total Prize Pool từ Total Entries và chuỗi Buyin
+function updateTotalPrizePool() {
+  const infoElements = document.querySelectorAll('.top-info-line');
+  if (infoElements.length > 1) {
+    const text = infoElements[1].textContent;
+    // Tìm chuỗi "Buyin: " và lấy phần số đằng sau, kiểm tra xem có chữ K không
+    const buyinMatch = text.match(/Buyin:\s*([\d,.]+)([kK]?)/i);
+    if (buyinMatch) {
+      // Xoá dấu phẩy hoặc chấm nếu có
+      let buyinStr = buyinMatch[1].replace(/[,.]/g, '');
+      let buyinAmount = parseInt(buyinStr, 10);
+      
+      // Nếu có chữ K hoặc k thì nhân thêm 1000
+      if (buyinMatch[2] && buyinMatch[2].toLowerCase() === 'k') {
+        buyinAmount *= 1000;
+      }
+
+      const entriesElement = document.getElementById('val-entries');
+      if (entriesElement) {
+        const entriesText = entriesElement.textContent;
+        const entriesCount = parseInt(entriesText.replace(/[,.]/g, ''), 10);
+        
+        if (!isNaN(buyinAmount) && !isNaN(entriesCount)) {
+          const totalPrize = buyinAmount * entriesCount;
+          // Tìm class prize-total và gán giá trị
+          const prizeTotalElement = document.querySelector('.prize-total');
+          if (prizeTotalElement) {
+            // Định dạng theo kiểu de-DE để có dấu chấm (4.000.000) và thêm chữ $
+            prizeTotalElement.textContent = new Intl.NumberFormat('de-DE').format(totalPrize) + ' $';
+          }
+        }
+      }
+    }
+  }
+}
+
+// Chạy tính toán Total Stack và Total Prize Pool ngay khi tải trang
 updateTotalStack();
+updateTotalPrizePool();
