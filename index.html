@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Countdown Pro Max - Poker Master Security</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <div class="left-sidebar">
-    
+
     <div class="level-panel">
       <table class="level-table">
         <thead>
@@ -22,21 +24,21 @@
         </thead>
         <tbody id="pokerLevelsContent"></tbody>
       </table>
-   
+
     </div>
-   <button id="levelControlBtn" class="btn-luxury-start">START</button>
+    <button id="levelControlBtn" class="btn-luxury-start">START</button>
     <div class="stats-panel">
       <div class="stat-item">
         <span class="stat-label">Total Entries</span>
-        <span class="stat-value" id="val-entries">57</span>
+        <span class="stat-value" id="val-entries">8</span>
       </div>
       <div class="stat-item">
         <span class="stat-label">Total Stack</span>
-        <span class="stat-value" id="val-tstack">5.700.000</span>
+        <span class="stat-value" id="val-tstack">20.000</span>
       </div>
       <div class="stat-item">
-        <span class="stat-label">Avg Stack</span>
-        <span class="stat-value" id="val-astack">183.870</span>
+        <span class="stat-label">BB</span>
+        <span class="stat-value" id="val-astack">100</span>
       </div>
       <div class="stat-item">
         <span class="stat-label">Next Break</span>
@@ -47,8 +49,51 @@
   </div>
 
   <div class="app-container">
-     </div>
 
-  <script src="script.js"></script>
+    <!-- Thông tin phía trên cùng -->
+    <div class="top-info-bar">
+      <div class="top-info-line">GAME PEGASUITE DEEP STACK</div>
+      <div class="top-info-line">Buyin: 500K Stack: 2500 Blind: 15'/'5 Reg End : End Level 10</div>
+    </div>
+
+    <!-- Cụm đồng hồ và Level ở giữa -->
+    <div class="center-display">
+      <div class="display-level" id="mainLevel">LEVEL 1</div>
+      <div class="display-timer" id="mainTimer">15:00</div>
+      <div class="display-blinds" id="mainBlinds">10 / 10 BBA</div>
+      <div class="display-next-blinds" id="mainNextBlinds">NEXT: 10 / 20 BBA</div>
+    </div>
+
+    <!-- Khu vực các bảng góc trên bên phải -->
+    <div class="right-panels-container">
+      <!-- Bảng Prize Pool -->
+      <div class="prize-pool-panel">
+        <div class="prize-title">PRIZE POOL</div>
+        <div class="prize-total">4.000.000 $</div>
+        <div class="prize-list">
+          <div class="prize-row"><span>1</span><span>3.500.000</span></div>
+          <div class="prize-row"><span>2</span><span>1.000.000</span></div>
+          <div class="prize-row"><span>3</span><span>500.000</span></div>
+        </div>
+      </div>
+
+      <!-- Bảng Name List -->
+      <div class="name-list-panel">
+        <div class="name-list-header">
+          <span class="name-title">Name</span>
+          <div class="ticket-icon">
+            <span class="ticket-star">★</span>
+          </div>
+        </div>
+        <div class="name-list-content">
+          <div class="name-row"><span>Huy</span><span>1</span></div>
+          <div class="name-row"><span>Hiền</span><span>2</span></div>
+          <div class="name-row"><span>Linh</span><span>3</span></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
+
 </html>
